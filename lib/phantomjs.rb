@@ -37,18 +37,24 @@ class Phantomjs
   def execute(path, arguments, block)
     begin
       if block
-        IO.popen([exec, path, arguments].flatten).each_line do |line|
+        run_phantom(exec, path, arguments).each_line do |line|
           block.call(line)
         end
       else
-        IO.popen([exec, path, arguments].flatten).read
+        run_phantom(exec, path, arguments).read
       end
     rescue Errno::ENOENT
       raise CommandNotFoundError.new('Phantomjs is not installed')
+    ensure
+      @pfile.close if @pfile && !@pfile.closed?
     end
   end
 
   def exec
     Phantomjs::Configuration.phantomjs_path
+  end
+
+  def run_phantom(exec, path, arguments)
+    @pfile = IO.popen([exec, path, arguments].flatten)
   end
 end

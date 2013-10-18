@@ -27,6 +27,12 @@ describe Phantomjs do
       result.should eq("bar\nfoo1\nfoo2\n")
     end
 
+    it "calls close on" do
+      script = File.expand_path('./spec/runner.js')
+      IO.any_instance.should_receive(:close).and_call_original
+      result = Phantomjs.run(script, 'foo1', 'foo2')
+    end
+
     it "accepts a block that will get called for each line of output" do
       line = ''
       script = File.expand_path('./spec/runner.js')
