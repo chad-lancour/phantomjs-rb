@@ -5,44 +5,29 @@ require "phantomjs/errors"
 
 class Phantomjs
 
-  def self.run(path, *args, &block)
-    Phantomjs.new.run(path, *args, &block)
+  attr_accessor :path, :args, :given_block
+  def initialize(opts={}, *args)
+    self.path = opts[:path] || script_path(opts[:script])
+    self.args = args
+    self.given_block = block_given? ? Proc.new : nil
+    ensure_path
   end
 
-  def run(path, *args)
-    epath = File.expand_path(path)
-    raise NoSuchPathError.new(epath) unless File.exist?(epath)
-    block = block_given? ? Proc.new : nil
-    execute(epath, args, block)
+  def self.run(path, *args, &block)
+    Phantomjs.new({path: path}, *args, &block).execute
   end
 
   def self.inline(script, *args, &block)
-    Phantomjs.new.inline(script, *args, &block)
-  end
-
-  def inline(script, *args)
-    file = Tempfile.new('script.js')
-    file.write(script)
-    file.close
-    block = block_given? ? Proc.new : nil
-    execute(file.path, args, block)
+    Phantomjs.new({script: script}, *args, &block).execute
   end
 
   def self.configure(&block)
     Configuration.configure(&block)
   end
 
-  private
-
-  def execute(path, arguments, block)
+  def execute
     begin
-      if block
-        run_phantom(exec, path, arguments).each_line do |line|
-          block.call(line)
-        end
-      else
-        run_phantom(exec, path, arguments).read
-      end
+      given_block ? block_read : run_phantom.read
     rescue Errno::ENOENT
       raise CommandNotFoundError.new('Phantomjs is not installed')
     ensure
@@ -50,11 +35,28 @@ class Phantomjs
     end
   end
 
+  private
+
+  def block_read
+    run_phantom.each_line { |line| given_block.call(line) }
+  end
+
   def exec
     Phantomjs::Configuration.phantomjs_path
   end
 
-  def run_phantom(exec, path, arguments)
-    @pfile = IO.popen([exec, path, arguments].flatten)
+  def run_phantom
+    @pfile = IO.popen([exec, path, args].flatten)
+  end
+
+  def ensure_path
+    raise NoSuchPathError.new(File.expand_path(path)) unless File.exist?(path)
+  end
+
+  def script_path(script)
+    file = Tempfile.new('script.js')
+    file.write(script)
+    file.close
+    file.path
   end
 end
