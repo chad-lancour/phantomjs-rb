@@ -32,6 +32,7 @@ class Phantomjs
       raise CommandNotFoundError.new('Phantomjs is not installed')
     ensure
       @pfile.close if @pfile && !@pfile.closed?
+      @tmpfile.unlink if @tmpfile
     end
   end
 
@@ -54,9 +55,12 @@ class Phantomjs
   end
 
   def script_path(script)
-    file = Tempfile.new('script.js')
-    file.write(script)
-    file.close
-    file.path
+    begin
+      @tmpfile = Tempfile.new('script.js')
+      @tmpfile.write(script)
+    ensure
+      @tmpfile.close
+    end
+    @tmpfile.path
   end
 end
