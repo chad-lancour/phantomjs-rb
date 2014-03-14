@@ -2,16 +2,43 @@
 
 [![Build Status](https://secure.travis-ci.org/westoque/phantomjs.rb.png?branch=master)](http://travis-ci.org/westoque/phantomjs.rb)
 
-A ruby wrapper for phantomjs.
+A ruby wrapper for phantomjs and casperjs.
 
 ## Requirements
 
 You have to have `phantomjs` installed.
 
-## Install
+## Add to Gemfile
 
-```sh
-gem install phantomjs.rb
+```rb
+gem 'phantomjs-rb', git: 'https://github.com/chad-lancour/phantomjs-rb.git'
+```
+
+## Configuring the path to phantomjs
+
+If you are using phantomjs in a non-typical installation path or are including the
+binary inside your application, you can configure phantomjs.rb to use a custom path.
+
+If you are using casperjs, it requires phantomjs be on the path and named phantomjs.
+
+The following example is a good starting point for phantomjs:
+```rb
+osx = Rails.env.development? || Rails.env.test?
+Phantomjs.configure do |config|
+  config.phantomjs_path = "#{Rails.root}/bin/phantomjs-#{osx ? 'osx' : 'x86'}"
+end
+```
+
+The following example is a good starting point for casperjs:
+```rb
+Phantomjs.configure do |config|
+  # execute casperjs, which executes phantomjs
+  config.phantomjs_path = "#{BASE_PATH}/bin/casperjs"
+  # only needed if phantom is not already on the PATH
+  config.phantomjs_env_path = { "PATH" => "#{BASE_PATH}/bin:#{ENV['PATH']}" }
+  # only used when using string scripts via inline. Allows overriding default of Dir.tmpdir
+  config.phantomjs_tmpdir = "#{BASE_PATH}/tmp"
+end
 ```
 
 ## Usage
@@ -76,20 +103,6 @@ end
 #=> ctr is: 0
     ctr is: 1
     ctr is: 2
-```
-
-## Configuring the path to phantomjs
-
-If you are using phantomjs in a non-typical installation path or are including the
-binary inside your application, you can configure phantomjs.rb to use a custom path.
-
-The following example is a good starting point to follow.
-
-```rb
-osx = Rails.env.development? || Rails.env.test?
-Phantomjs.configure do |config|
-  config.phantomjs_path = "#{Rails.root}/bin/phantomjs-#{osx ? 'osx' : 'x86'}"
-end
 ```
 
 ## Running the tests
