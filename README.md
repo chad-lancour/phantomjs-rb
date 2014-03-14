@@ -1,6 +1,4 @@
-# phantomjs.rb
-
-[![Build Status](https://secure.travis-ci.org/westoque/phantomjs.rb.png?branch=master)](http://travis-ci.org/westoque/phantomjs.rb)
+# phantomjs-rb
 
 A ruby wrapper for phantomjs and casperjs.
 
@@ -17,7 +15,7 @@ gem 'phantomjs-rb', git: 'https://github.com/chad-lancour/phantomjs-rb.git'
 ## Configuring the path to phantomjs
 
 If you are using phantomjs in a non-typical installation path or are including the
-binary inside your application, you can configure phantomjs.rb to use a custom path.
+binary inside your application, you can configure phantomjs-rb to use a custom path.
 
 If you are using casperjs, it requires phantomjs be on the path and named phantomjs.
 

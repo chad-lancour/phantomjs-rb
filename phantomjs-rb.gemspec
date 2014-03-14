@@ -3,7 +3,7 @@ $:.push File.expand_path("../lib", __FILE__)
 require "phantomjs/version"
 
 Gem::Specification.new do |s|
-  s.name        = "phantomjs.rb"
+  s.name        = "phantomjs-rb"
   s.version     = Phantomjs::VERSION
   s.authors     = ["William Estoque"]
   s.email       = ["william.estoque@gmail.com"]
@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{Ruby wrapper for phantomjs}
   s.description = %q{Ruby wrapper for phantomjs}
 
-  s.rubyforge_project = "phantomjs.rb"
+  s.rubyforge_project = "phantomjs-rb"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
