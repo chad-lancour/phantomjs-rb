@@ -46,8 +46,18 @@ class Phantomjs
     Phantomjs::Configuration.phantomjs_path
   end
 
+  def env_path
+    Phantomjs::Configuration.phantomjs_env_path
+  end
+
+  def phantomjs_tmpdir
+    Phantomjs::Configuration.phantomjs_tmpdir
+  end
+
   def run_phantom
-    @pfile = IO.popen([exec, path, args].flatten)
+    cmd = [ env_path, exec, path, args ].flatten
+    ap cmd
+    @pfile = IO.popen( cmd )
   end
 
   def ensure_path
@@ -56,7 +66,7 @@ class Phantomjs
 
   def script_path(script)
     begin
-      @tmpfile = Tempfile.new('script.js')
+      @tmpfile = Tempfile.new('script.js', phantomjs_tmpdir || Dir.tmpdir )
       @tmpfile.write(script)
     ensure
       @tmpfile.close
