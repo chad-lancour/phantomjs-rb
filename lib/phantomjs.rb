@@ -56,7 +56,6 @@ class Phantomjs
 
   def run_phantom
     cmd = [ env_path, exec, path, args ].flatten
-    ap cmd
     @pfile = IO.popen( cmd )
   end
 
